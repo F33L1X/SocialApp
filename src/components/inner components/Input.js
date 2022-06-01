@@ -1,9 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react';
 
-function Input() {
+export default function Input() {
+
+  const [comment, setComment] =useState("")
+ 
+
+  function addComment () {
+    setComment ()
+    console.log ("klicked")
+  }
+
+
+
+
+
   return (
-    <div className="Input"><input></input><button>Commit</button></div>
+    
+    <div className="Input"><input></input><button onClick={addComment}>Commit</button></div>
   )
 }
-
-export default Input

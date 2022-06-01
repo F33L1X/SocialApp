@@ -16,6 +16,12 @@
   height: 60vh;
 }
 
+.CommentBox {
+  height: 20vh;
+  border: 2px dotted;
+  margin: 2%;
+}
+
 .Sidebar {
   border: 2px dotted;
   height: 60vh;

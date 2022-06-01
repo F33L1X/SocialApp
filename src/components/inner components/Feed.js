@@ -2,7 +2,7 @@ import React from 'react'
 
 function Feed() {
   return (
-    <div className="Feed">Feed</div>
+    <div className="Feed"><div className='CommentBox'>Comment 1</div></div>
   )
 }
 
