@@ -2,7 +2,7 @@ import React from 'react'
 
 function Input() {
   return (
-    <div class="Input"><input></input><button>Commit</button></div>
+    <div className="Input"><input></input><button>Commit</button></div>
   )
 }
 

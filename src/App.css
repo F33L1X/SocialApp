@@ -1,37 +1,37 @@
 .Header {
   display: flex;
   justify-content: center;
-  border:2px dotted;
+  border: 2px dotted;
 }
 
 .Content {
   display: flex;
   justify-content: space-around;
-  border:2px dotted;
-  margin-top:20px;
-  height:80vh;
- 
+  border: 2px dotted;
+  margin-top: 20px;
+  height: 80vh;
 }
 
 .Feed {
-  border:2px dotted; 
-  height:60vh;
+  border: 2px dotted;
+  height: 60vh;
   margin-top: 20px;
 }
 
 .Sidebar {
-  border:2px dotted; 
-  height:60vh;
+  border: 2px dotted;
+  height: 60vh;
   margin-top: 20px;
   width: 25vw;
-  
 }
 
 .Footer {
   display: flex;
   justify-content: center;
-  border:2px dotted;
-  margin-top:20px;
-  height:10vh;
+  border: 2px dotted;
+  margin-top: 20px;
+  height: 10vh;
 }
-
+.Input {
+  border: 2px dotted;
+}

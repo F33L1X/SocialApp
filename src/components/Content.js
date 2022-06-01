@@ -5,7 +5,7 @@ import Sidebar from './inner components/Sidebar'
 
 function Content() {
   return (
-    <div class="Content"><div><Input/><Feed/></div><Sidebar/></div>
+    <div class="Content"><Input/><Feed/></div>
     
   )
 }
