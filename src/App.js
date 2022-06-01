@@ -12,25 +12,31 @@ import Footer from './components/Footer'
 
 
 
+
 function App() {
   return (
 
-    <Grid container rowSpacing={2} columnSpacing={2}>
-      <Grid item xs={12} md={8} >
+    <Grid container rowSpacing={2} columnSpacing={2} irection="row" justifyContent="center" alignItems="center"   >
+      <Grid item xs={12}   >
         <Header>xs=6 md=8 </Header>
-    </Grid>
-    <Grid item xs={12} md={8} >
-        <Input>xs=6 md=8 </Input>
-    </Grid>
-      <Grid item xs={6} md={4} >
-        <Feed>xs=6 md=4 </Feed>
-    </Grid>
-    <Grid item xs={6} md={8} >
+      </Grid>
+      <Grid item xs={12}  >
+        <Input></Input>
+      </Grid>
+
+      
+      <Grid item xs={8} lg={5}     >
+        <Feed></Feed>
+      </Grid>
+      <Grid item xs={4} lg={3}   >
         <Sidebar>xs=6 md=8 </Sidebar>
-    </Grid>
-      <Grid item xs={12} md={4} >
+      </Grid>
+    
+
+
+      <Grid item xs={12} lg={12} >
         <Footer>xs=6 md=4 </Footer>
-    </Grid>
+      </Grid>
     </Grid>
   
     
