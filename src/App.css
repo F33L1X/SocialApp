@@ -17,21 +17,14 @@ body {
   margin-left: 20px;
 }
 
-.Content {
-  display: flex;
-  justify-content: space-around;
-  border: 2px dotted;
-  height: 80vh;
-}
-
 .Feed {
   border: 1px solid;
-  height: 60vh;
+  height: 80vh;
 }
 
 .Sidebar {
   border: 2px dotted;
-  height: 60vh;
+  height: 80vh;
 }
 
 .Footer {
@@ -42,6 +35,8 @@ body {
 }
 .Input {
   box-shadow: 1px 5px 15px 0px;
+  width: 70%;
+  margin-left: 15%;
 }
 
 .sendButton {

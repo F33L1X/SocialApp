@@ -1,9 +1,10 @@
 import React from 'react'
 import InputField from './Input'
+import SinglePost from '../SinglePost'
 
 function Feed() {
   return (
-    <div className="Feed"><div><InputField/></div></div>
+    <div className="Feed"><div><InputField/><SinglePost/></div></div>
   )
 }
 
