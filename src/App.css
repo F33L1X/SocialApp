@@ -1,3 +1,7 @@
+body {
+  background: rgb(208, 214, 217);
+}
+
 .Header {
   border: 2px dotted;
   display: flex;
@@ -21,7 +25,7 @@
 }
 
 .Feed {
-  border: 2px dotted;
+  border: 1px solid;
   height: 60vh;
 }
 
@@ -37,9 +41,12 @@
   height: 10vh;
 }
 .Input {
-  border: 2px dotted;
+  box-shadow: 1px 5px 15px 0px;
 }
 
 .sendButton {
   height: 20px;
+}
+
+#filled-basic {
 }

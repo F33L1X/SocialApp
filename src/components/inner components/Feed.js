@@ -1,9 +1,9 @@
 import React from 'react'
-import Input from './Input'
+import InputField from './Input'
 
 function Feed() {
   return (
-    <div className="Feed"><div><Input/></div></div>
+    <div className="Feed"><div><InputField/></div></div>
   )
 }
 
