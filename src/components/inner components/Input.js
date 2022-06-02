@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, {  useRef } from 'react';
+import Button from '@mui/material/Button'
 
 export default function Input() {
 
-  const [comment, setComment] =useState("")
+  
+  const inputRef=useRef (null)
+  
+
+ 
  
 
   function addComment () {
-    setComment ()
-    console.log ("klicked")
+    if (inputRef.current.value !==""){
+      console.log ("klicked")
+    }
   }
 
 
@@ -16,6 +22,6 @@ export default function Input() {
 
   return (
     
-    <div className="Input"><input></input><button onClick={addComment}>Commit</button></div>
+    <div className="Input"><input ref={inputRef}></input><Button sx={{fontSize: 8}} className="sendButton" variant="contained" onClick={addComment}>Commit</Button></div>
   )
 }

@@ -1,7 +1,16 @@
 .Header {
-  display: flex;
-  justify-content: center;
   border: 2px dotted;
+  display: flex;
+  justify-content: space-between;
+}
+
+.Header > div {
+  border: 2px solid;
+}
+
+.nav {
+  display: flex;
+  margin-left: 20px;
 }
 
 .Content {
@@ -14,12 +23,6 @@
 .Feed {
   border: 2px dotted;
   height: 60vh;
-}
-
-.CommentBox {
-  height: 20vh;
-  border: 2px dotted;
-  margin: 2%;
 }
 
 .Sidebar {
@@ -35,4 +38,8 @@
 }
 .Input {
   border: 2px dotted;
+}
+
+.sendButton {
+  height: 20px;
 }
