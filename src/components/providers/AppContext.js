@@ -6,10 +6,10 @@ const AppContext=createContext()
 const useAppContext = () => useContext(AppContext);
 
 const AppContextProvider = ({ children }) => {
-  const [post, setPost, addPost] = usePost();
+  const [post, setPost, addPost,delPost, addComment, setNewPostTitle, setNewPostDescription] = usePost();
 
   return (
-    <AppContext.Provider value={{ post, setPost, addPost }}>
+    <AppContext.Provider value={{ post, setPost, addPost, delPost, addComment, setNewPostTitle, setNewPostDescription }}>
       {children}
     </AppContext.Provider>
   );
