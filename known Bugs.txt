@@ -1,0 +1,3 @@
+Zuklappen der Kommmentare crasht app
+Übertragung von Posts ins Backend funktioniert nicht (Proxy Fehler)
+Übertrag neuer User ins Backend funktioniert nicht (Funktion wird nicht aufgerufen)

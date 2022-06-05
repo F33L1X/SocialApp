@@ -5,7 +5,7 @@ import { useAppContext } from '../providers/AppContext';
 
 
 function Feed() {
-  const {post}=useAppContext()
+  const {allPosts}=useAppContext();
 
 
   return (
@@ -14,7 +14,7 @@ function Feed() {
         <InputField/>
 
         {
-        post.map(e => <SinglePost  key={e.id} onePost={e} /> )
+        allPosts.map(e => <SinglePost  key={e.id} post={e} /> )
         }
         
       </div>
