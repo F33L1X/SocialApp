@@ -1,16 +1,25 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import InputField from './Input'
 import SinglePost from '../SinglePost'
 import { useAppContext } from '../providers/AppContext';
 
 
 function Feed() {
-  const {allPosts}=useAppContext();
+  const {allPosts, setfilteredUserName, filteredUserName, updateFilterOfPosts}=useAppContext();
 
+  // Filter des UserNames löschen
+  useEffect( () => {     
+      setfilteredUserName("");        
+  }, []);
+
+  useEffect( () => {
+      updateFilterOfPosts();
+  }, [filteredUserName]);
 
   return (
     <div className="Feed">
       <div>
+        {}
         <InputField/>
 
         {

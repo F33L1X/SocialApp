@@ -10,10 +10,11 @@ import Feed from './components/inner components/Feed'
 import Sidebar from './components/inner components/Sidebar'
 import Footer from './components/Footer'
 import SinglePost from './components/SinglePost'
+import Profil from './components/Profil'
 import Login from './components/inner components/Login';
 import { AppContextProvider } from './components/providers/AppContext';
-
-
+import FriendRequests from './components/FriendRequests';
+import Chat from './components/Chat';
 
 
 function App() {
@@ -36,6 +37,9 @@ function App() {
               <Route path="post/:postID" element={<SinglePost />} />
               <Route path ="/register" element={<Register />} />
               <Route path ="/login" element={<Login />} />
+              <Route path="profil/:userName" element={<Profil />} />
+              <Route path="/freundschaftsanfragen" element={<FriendRequests />} />
+              <Route path="/chat" element={<Chat />} />
             </Routes>
           </Grid>          
           <Grid item xs={12} sm={3} md={3} lg={3}   >

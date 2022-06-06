@@ -6,10 +6,9 @@ import axios from "axios";
 const useUser=()=> {
     
     const [allUsers ,setAllUsers]=useState([]);
-    const [currentUser ,setCurrentUser]=useState("");
+    const [currentUser ,setCurrentUser]=useState({});
 
     const backend_LoginIsPossible = async (userName, userPW) => {
-      console.log("backend_LoginIsPossible");
         const json = {"userName": userName,
                       "password": userPW};
         var config = {
@@ -40,7 +39,6 @@ const useUser=()=> {
       return response.data;
     }
 
-
     const backend_AddUser = async (singleUser) =>{
       var config = {
         method: 'post',
@@ -53,11 +51,61 @@ const useUser=()=> {
       let response = await axios (config);
       return response.data;
     }
+    const backend_sendNewMessage = async (newMessage) => {
+      var config = {
+        method: 'put',
+        url: '/api/newMessage',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: newMessage    
+      };
+      let response = await axios (config);
+      return response.data;
+    }
+    const backend_loadChatVerlauf = async (currentUser) => {
+      var config = {
+        method: 'put',
+        url: '/api/allMessages',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: currentUser    
+      };
+      let response = await axios (config);
+      return response.data;
+    }
+    
 
+    const backend_sendFriendRequest= async (friendRequest) =>{
+      var config = {
+        method: 'post',
+        url: '/api/friendRequest',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: friendRequest    
+      };
+      let response = await axios (config);
+      return response.data;
+    }
+    const backend_acceptFriendRequest= async (friendRequest) =>{
+      var config = {
+        method: 'put',
+        url: '/api/acceptFriendRequest',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: friendRequest    
+      };
+      let response = await axios (config);
+      return response.data;
+    }
 
     const loginUser =async (name, userPW) => {
-      if (await backend_LoginIsPossible(name, userPW)){
-        setCurrentUser(name);
+      let loggedInUser = await backend_LoginIsPossible(name, userPW)
+      if (loggedInUser !== undefined){
+        setCurrentUser(loggedInUser);
         return "Login erfolgreich";
       }else{
         return "Fehlerhafte Login Daten";
@@ -65,11 +113,9 @@ const useUser=()=> {
         
     }
     const logoutUser = () => {
-      setCurrentUser("");
+      setCurrentUser({});
     }
-
-
-
+    
 
 
     const  addUser = async (userName, userPW) =>{
@@ -80,7 +126,9 @@ const useUser=()=> {
           if (! await backend_UserExists(userName)){
             console.log("lege neuen Nutzer an");
             let today = new Date().toISOString().slice(0, 10);
-            let newUser = {id: uuidv4(), userName: userName, password: userPW, registrationDate: today};
+            let newUser = {id: uuidv4(), userName: userName, password: userPW, registrationDate: today,  
+                          friends:[], friendRequestsSent:[], friendRequestsRecieved: [],
+                          messages:[]};
             backend_AddUser(newUser);
             setAllUsers ([...allUsers, currentUser]);    
             loginUser(userName, userPW) 
@@ -93,7 +141,44 @@ const useUser=()=> {
           
         }
       }
-      return [addUser, loginUser, logoutUser, currentUser]
+
+
+      const addFriendRequest = async (message, sendingUser, recievingUser) =>{
+        console.log("addFriendRequest");
+        let today = new Date();
+        let newFriendRequest = {id:uuidv4(), message:message , sendingUser: sendingUser, recievingUser:recievingUser, date: today}
+        console.log(newFriendRequest);
+        
+        setCurrentUser(await backend_sendFriendRequest(newFriendRequest));        
+      }
+      const acceptFriendRequest= async (requestID)=>{        
+          
+          setCurrentUser(await backend_acceptFriendRequest([currentUser,requestID])); 
+          console.log(currentUser);  
+      }
+      const rejectFriendRequest = async (requestID)=> {
+
+      }
+      const sendNewMessage = async (chatPartnerName, messageText) => {
+          let today = new Date();
+          let newMessage= {
+            id: uuidv4(),
+            date: today,
+            text: messageText,
+            from: currentUser.userName,
+            to: chatPartnerName
+         } 
+         return await backend_sendNewMessage(newMessage);
+      }
+
+      const loadChatVerlauf = async () => {
+
+       return await backend_loadChatVerlauf(currentUser);
+      }
+
+
+      return [addUser, loginUser, logoutUser, currentUser, addFriendRequest, 
+              acceptFriendRequest,rejectFriendRequest, sendNewMessage, loadChatVerlauf]
 }
 
 export default useUser;

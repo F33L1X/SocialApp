@@ -1,7 +1,6 @@
-import React from 'react'
+import React, {useRef, useEffect} from 'react'
 import Logo from './inner components/Logo'
 import { Link } from "react-router-dom";
-
 
 
 import Box from '@mui/material/Box';
@@ -17,28 +16,50 @@ import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import { useAppContext } from './providers/AppContext';
-
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import TextField from '@mui/material/TextField';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 
 
 function Header() {
-  const {logoutUser, currentUser, loginUser}=useAppContext();
-
+  const {logoutUser, currentUser, updateFilterOfPosts, setSearchTerm, searchTerm}=useAppContext();
+  const inputRefSearchBar=useRef (null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
+  useEffect( () => {     
+    updateFilterOfPosts();             
+  }, [searchTerm]);
+
+
+
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
-  if (currentUser === ""){
+    
+
+  
+  const searchChanged = async () => {
+    console.log("searchChanged")
+    console.log(inputRefSearchBar.current.value)
+ 
+    setSearchTerm(inputRefSearchBar.current.value);
+      
+   
+  }
+
+  if (Object.keys(currentUser).length === 0){
     return (
       <div className="Header">
          <Link to="/">
           <Logo></Logo>
          </Link>
-  
-  
+         <TextField id="outlined-basic" label="Suche" variant="outlined" 
+                    onChange={searchChanged} inputRef={inputRefSearchBar} />
          <React.Fragment>
         <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
           <Typography sx={{ minWidth: 100 }}>Contact</Typography>
@@ -119,11 +140,27 @@ function Header() {
           <Logo></Logo>
          </Link>
   
-  
+         <TextField id="outlined-basic" label="Suche" variant="outlined" 
+                    onChange={searchChanged} inputRef={inputRefSearchBar} />
+
+
          <React.Fragment>
         <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-          <Typography sx={{ minWidth: 100 }}>Contact</Typography>
-          <Typography sx={{ minWidth: 100 }}>Profile</Typography>
+          <Link to="/chat">
+            <Tooltip title="Chat">             
+                <ChatBubbleIcon />         
+            </Tooltip>
+          </Link>
+          <Tooltip title="Nutzername">             
+              <Typography sx={{ minWidth: 100 }}>{currentUser.userName}</Typography>              
+          </Tooltip>
+          <Tooltip title="Freundschaftsanfragen">
+            <Link to="/freundschaftsanfragen">
+              <PersonAddIcon /> 
+              <Typography sx={{ minWidth: 100 }}>{currentUser.friendRequestsRecieved.length}</Typography>
+            </Link>
+            
+          </Tooltip>
           <Tooltip title="Account settings">
             <IconButton
               onClick={handleClick}
@@ -133,7 +170,7 @@ function Header() {
               aria-haspopup="true"
               aria-expanded={open ? 'true' : undefined}
             >
-              <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+              <Avatar sx={{ width: 32, height: 32 }}></Avatar>
             </IconButton>
           </Tooltip>
         </Box>
@@ -187,13 +224,14 @@ function Header() {
             </ListItemIcon>
             Settings
           </MenuItem>
-          <MenuItem onClick={logoutUser}>
-            <ListItemIcon>
-              <Logout fontSize="small" />
-            </ListItemIcon>
-            
-            Logout
-          </MenuItem>
+          <Link to="/">
+            <MenuItem onClick={logoutUser}>
+              <ListItemIcon>
+                <Logout fontSize="small" />
+              </ListItemIcon>
+              Logout
+            </MenuItem>
+          </Link>
         </Menu>
       </React.Fragment>
       </div>

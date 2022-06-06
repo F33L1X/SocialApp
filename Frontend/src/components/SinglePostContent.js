@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef , useEffect} from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
@@ -21,6 +21,8 @@ import Button from '@mui/material/Button'
 import { Input } from '@mui/material';
 import { Link } from "react-router-dom";
 import Comment from "./Comment";
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -40,21 +42,34 @@ const ExpandMore = styled((props) => {
 const SinglePostContent = ({post}) => {
 
     const [expanded, setExpanded] = React.useState(false);
-    const {delPost, addComment, currentUser}=useAppContext();
+    const [liked, setLiked] = React.useState(false);
+    const {delPost, addComment, currentUser, 
+            toggleLikeOfPost, allPosts, setPost}=useAppContext();
     const inputRefComment=useRef (null);
-    
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open = Boolean(anchorEl);
+    useEffect( () => {         
+      if (post.likedBy.includes(currentUser.userName))
+          setLiked(true);
+        else
+          setLiked(false);       
+      }, []);
+    useEffect( () => {     
+      if (post.likedBy.includes(currentUser.userName))
+          setLiked(true);
+        else
+          setLiked(false);       
+      }, [allPosts]);
 
-    //console.log("SinglePostContent: " + JSON.stringify(post));
     const handleExpandClick = () => {
         setExpanded(!expanded);
       };
     
-      const [anchorEl, setAnchorEl] = React.useState(null);
-      const open = Boolean(anchorEl);
+      
       const toggleEditMenu = (event) => {
         setAnchorEl(event.currentTarget);
-       
       };
+
       const closePostMenu = () => {
         setAnchorEl(null);
       };
@@ -74,30 +89,40 @@ const SinglePostContent = ({post}) => {
       const addCommentClicked = ( ) => {
         console.log("addCommentClicked");
         if (inputRefComment.current !== null){
-          let user = currentUser;
+          let user = currentUser.userName;
           if (user === ""){
             user = "Gast";
-          }    
-          console.log(user);        
-          addComment(post.id, inputRefComment.current.value, user);
-          console.log(post);
+          }                
+          addComment(post.id, inputRefComment.current.value, user);         
           inputRefComment.current.value = "";
         }
        
       }
 
+      
+
+      const likeIconClicked= async ()=>{
+        post = await toggleLikeOfPost(post, currentUser); 
+        // Aktualisieren aller Posts entsprechend der neuen Daten
+        // Ziel ist, dass der neue Status über alle Ebenen verfügbar ist        
+        setPost(allPosts => allPosts.map(e => { if (e.id === post.id) e.likedBy = post.likedBy; return e }));
+     
+      }
     return (
     <Box  m={2} pt={3}>
         <Card sx={{ maxWidth: 345 }} >
           <CardHeader
             avatar={
-              <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                           
-                  {post.title.charAt(0).toUpperCase()}
-               
-              </Avatar>
+              <Link to={`/profil/${post.creator}`} key={post.creator} >
+                <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">                           
+                    {post.creator.charAt(0).toUpperCase() 
+                    }               
+                </Avatar>
+              </Link>
             }
+            
             action={
+              currentUser.userName === post.creator ?
               <div>
               <IconButton 
                 aria-label="more"
@@ -105,12 +130,9 @@ const SinglePostContent = ({post}) => {
                 aria-controls={open ? 'long-menu' : undefined}
                 aria-expanded={open ? 'true' : undefined}
                 aria-haspopup="true"
-                onClick={toggleEditMenu}>
-                  
+                onClick={toggleEditMenu}>                  
                 <MoreVertIcon />
-              </IconButton>
-              
-
+              </IconButton> 
               <Menu
                 id="long-menu"
                 MenuListProps={{
@@ -127,12 +149,14 @@ const SinglePostContent = ({post}) => {
                 }}
               >
 
-                
                 <MenuItem key="editPost" onClick={editPostClicked}>Editieren</MenuItem>
                 <MenuItem key="deletePost" onClick={delPostClicked}>Löschen</MenuItem>
+   
               </Menu>
               
-            </div>}
+            </div>
+            : null
+          }
             
             title= {
               <Link to={`/post/${post.id}`} key={post.id} > 
@@ -140,7 +164,8 @@ const SinglePostContent = ({post}) => {
               </Link>
              }
             
-            subheader={post.date}
+            subheader={ post.creator + " am " + post.date}
+               
           />
           
           <CardContent>
@@ -150,9 +175,14 @@ const SinglePostContent = ({post}) => {
             </Typography>
           </CardContent>
           <CardActions disableSpacing>
-            <IconButton aria-label="add to favorites">
-              <FavoriteIcon />
-            </IconButton>
+            {
+               Object.keys(currentUser).length > 0 ?
+                <IconButton aria-label="add to favorites" onClick={likeIconClicked}>
+                  {liked === true ? <div><FavoriteIcon /> {post.likedBy.length}</div>: <div><FavoriteBorderIcon />{post.likedBy.length}</div>}
+                </IconButton>
+              : <div>likes: {post.likedBy.length}</div>
+            }
+           
             <IconButton aria-label="share">
               <ShareIcon />
             </IconButton>

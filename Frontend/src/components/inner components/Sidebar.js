@@ -1,8 +1,8 @@
 import React from 'react'
-
+import Friends from '../Friends'
 function Sidebar() {
   return (
-    <div className="Sidebar">Sidebar</div>
+    <div className="Sidebar"><Friends /></div>
   )
 }
 

@@ -5,14 +5,17 @@ import axios from "axios";
 
 const usePost=()=> {
     const [allPosts ,setPost]=useState([]);
-    
+    const [searchTerm ,setSearchTerm]=useState("");
+    const [filteredUserName ,setfilteredUserName]=useState("");
 
+    
     useEffect( () => {     
       backend_LoadPosts().then(
           response => {                   
             setPost(response);           
         });            
     }, []);
+    
   
 
     const  backend_LoadPosts = async () => {
@@ -65,14 +68,64 @@ const usePost=()=> {
       let response = await axios (config);
       return response.data;
     }
+    const backend_toggleLikeOfPost = async (myData) =>{
+      console.log("backend_toggleLikeOfPost");
+      var config = {
+        method: 'put',
+        url: '/api/posts/toggleLikeOfPost',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: myData
+      };
+      let response = await axios (config);           
+      return response.data;    
+    }
 
 
+    const backend_filterPosts = async () => {
+      console.log("backend_filterPosts");
+      const json = {"searchTerm": searchTerm,
+                    "userName": filteredUserName};
+      console.log(json);
+      var config = {
+        method: 'post',
+        url: '/api/posts/search',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: json
+      };
+      let response = await axios (config);    
+      console.log(response.data)  
+      return response.data;    
+    }
+    const backend_getAllPostsOfUser = async (userName) => {
+      const json = {"userName": userName};
+        var config = {
+          method: 'post',
+          url: '/api/posts/allPostsOfUser',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          data: json
+        };
+        let response = await axios (config);    
+        console.log(response.data)  
+        return response.data;    
+    }
+    const allPostsOfUser = async (userName) => {
+      console.log("postsOfUser - start: " + userName);
+      if (userName !==""){
+        return await backend_getAllPostsOfUser(userName);
+      }
+    }
 
-
-    function addPost (title, description) {
-        if (title !==""){
+    function addPost (title, description, creator) {
+        if (title !=="" && creator !== ""){
           let today = new Date().toISOString().slice(0, 10);
-          let newPost = {id:uuidv4(), title: title, description: description, date: today, likedBy:[], comments: []};
+          let newPost = {id:uuidv4(), creator: creator, title: title, description: description, date: today, likedBy:[], comments: []};
+          console.log(newPost);
           setPost ([...allPosts, newPost]);
           let response = backend_AddPost(newPost);
           console.log(response);
@@ -97,20 +150,35 @@ const usePost=()=> {
     
     function setNewPostTitle (postID, newTitle) {
         if (newTitle !==""){
-          
           setPost(allPosts => allPosts.map(e => { if (e.id === postID) e.title = newTitle; return e }));
           console.log(allPosts)
         }
       }
 
       function setNewPostDescription (postID, newDesc) {
-        if (newDesc !==""){
-          
+        if (newDesc !==""){ 
           setPost(allPosts => allPosts.map(e => { if (e.id === postID) e.description = newDesc; return e }));
           console.log(allPosts)
         }
       }
-    return [allPosts, setPost, addPost,delPost, addComment, setNewPostTitle, setNewPostDescription]
+    
+      const updateFilterOfPosts= async () => {
+        console.log("filterPosts - start: ");
+        console.log(searchTerm);
+        console.log(filteredUserName);
+        setPost( await backend_filterPosts());
+        
+      }
+      const toggleLikeOfPost= async (post, currentUser)=>{
+        let newPost =  await backend_toggleLikeOfPost([post, currentUser]);
+        console.log(newPost);
+        return newPost;
+      }
+
+    return [allPosts, setPost, addPost,delPost, addComment, 
+            setNewPostTitle, setNewPostDescription, allPostsOfUser,
+             updateFilterOfPosts, setSearchTerm, setfilteredUserName, 
+             filteredUserName, searchTerm, toggleLikeOfPost]
     
 }
 
