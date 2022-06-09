@@ -174,6 +174,29 @@ app.post("/api/friendRequest", async (req, res) => {
   res.status(200).send(sendingUser);
 });
 
+
+app.post("/api/rejectFriendRequest", async  (req, res) => {
+  console.log("put /api/rejectFriendRequest");
+  let currentUser  = req.body[0];
+  let friendRequestID  = req.body[1];
+  let friendRequest = currentUser.friendRequestsRecieved.filter((e) => e.id === friendRequestID)[0]
+  // Nutzer aus DB auslesen, damit PW nicht vergessen wird
+  const sendingUser = await UserModel.findOne({ userName: friendRequest.Anfragender});
+  const recievingUser = await UserModel.findOne({ userName: currentUser.userName});
+  
+  // Freundschaftsanfrage bei beiden löschen
+  recievingUser.friendRequestsRecieved= recievingUser.friendRequestsRecieved.filter((e) => e.id !== friendRequestID)
+  sendingUser.friendRequestsSent = sendingUser.friendRequestsSent.filter((e) => e.id !== friendRequestID)
+  console.log("recievingUser");
+  console.log(recievingUser);
+  // aktualisierte Daten in Datenbank speichern
+  await UserModel.updateOne({userName: recievingUser.userName}, recievingUser);
+  await UserModel.updateOne({userName: sendingUser.userName}, sendingUser);
+  
+  recievingUser.password = "";
+  res.status(200).send(recievingUser);
+});
+
 app.put("/api/acceptFriendRequest", async  (req, res) => {
   console.log("put acceptFriendRequest");
   let currentUser  = req.body[0];

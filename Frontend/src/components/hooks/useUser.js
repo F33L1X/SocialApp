@@ -90,7 +90,20 @@ const useUser=()=> {
       return response.data;
     }
     
+    const backend_rejectFriendRequest  = async (friendRequest)=>{
+      var config = {
+        method: 'post',
+        url: '/api/rejectFriendRequest',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: friendRequest    
+      };
+      let response = await axios (config);
+      return response.data;
+    }
 
+    
     const backend_sendFriendRequest= async (friendRequest) =>{
       var config = {
         method: 'post',
@@ -167,14 +180,17 @@ const useUser=()=> {
         
         setCurrentUser(await backend_sendFriendRequest(newFriendRequest));        
       }
-      const acceptFriendRequest= async (requestID)=>{        
-          
+      const acceptFriendRequest= async (requestID)=>{   
           setCurrentUser(await backend_acceptFriendRequest([currentUser,requestID])); 
           console.log(currentUser);  
       }
-      const rejectFriendRequest = async (requestID)=> {
 
+      const rejectFriendRequest = async (requestID)=> {
+          setCurrentUser(await backend_rejectFriendRequest([currentUser,requestID])); 
       }
+
+
+
       const sendNewMessage = async (chatPartnerName, messageText) => {
           let today = new Date();
           let newMessage= {
@@ -197,8 +213,11 @@ const useUser=()=> {
           return backend_updateMessageStatus ([messages, newStatus])
       }
 
+
+
       return [addUser, loginUser, logoutUser, currentUser, addFriendRequest, 
-              acceptFriendRequest,rejectFriendRequest, sendNewMessage, loadChatVerlauf, updateMessageStatus]
+              acceptFriendRequest,rejectFriendRequest, sendNewMessage, loadChatVerlauf, 
+              updateMessageStatus]
 }
 
 export default useUser;

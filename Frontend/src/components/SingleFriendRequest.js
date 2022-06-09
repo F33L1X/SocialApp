@@ -18,10 +18,16 @@ import { useAppContext } from './providers/AppContext';
   const ITEM_HEIGHT = 48;
 
 const SingleFriendRequest = ({friendRequest}) => {
-    const {acceptFriendRequest}=useAppContext(); 
+    const {acceptFriendRequest, rejectFriendRequest}=useAppContext(); 
+    
     const acceptFriendRequestClicked =() =>{
-        acceptFriendRequest (friendRequest.id)
+        acceptFriendRequest (friendRequest.id);
     }
+
+    const rejectFriendRequestClicked = () => {
+        rejectFriendRequest(friendRequest.id);
+    }
+
     console.log(friendRequest);
     
     return (
@@ -45,7 +51,7 @@ const SingleFriendRequest = ({friendRequest}) => {
             <IconButton aria-label="add to favorites" onClick={acceptFriendRequestClicked} >
               <AddTaskIcon />
             </IconButton>
-            <IconButton aria-label="share">
+            <IconButton aria-label="share"  onClick={rejectFriendRequestClicked} >
               <DoNotDisturbIcon />
             </IconButton>
           </CardActions>
