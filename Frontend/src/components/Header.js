@@ -209,12 +209,11 @@ function Header() {
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <MenuItem>
-            <Avatar /> Profile
-          </MenuItem>
-          <MenuItem>
-            <Avatar /> My account
-          </MenuItem>
+          <Link to ="/editProfil">
+            <MenuItem>
+              <Avatar /> Profile
+            </MenuItem>
+          </Link>
           <Divider />
           
           

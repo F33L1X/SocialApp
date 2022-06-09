@@ -1,8 +1,12 @@
 import React from 'react'
 import Friends from '../Friends'
+import PopularPosts from '../PopularPosts'
+
 function Sidebar() {
   return (
-    <div className="Sidebar"><Friends /></div>
+    <div className="Sidebar">
+      <PopularPosts />
+    </div>
   )
 }
 

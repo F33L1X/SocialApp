@@ -67,6 +67,37 @@ app.put('/api/allMessages', async  (req, res) => {
 
 })
 
+app.put('/api/updateMessageStatus', async  (req, res) => {
+  console.log("put - /api/updateMessageStatus");
+  
+  let newMsg = req.body[0];
+  let newStatus = req.body[1];
+  console.log(newMsg);
+  console.log(newStatus);
+ 
+
+    // User Objekte aus DB abfragen
+    const sender = await UserModel.findOne({ userName: newMsg.from});
+    const reciever = await UserModel.findOne({ userName: newMsg.to});
+
+   // Message identifizieren und aktualisieren
+    let messagesToBeUpdatedSender =  sender.messages.map(oldMsg => { if (oldMsg.id === newMsg.id) oldMsg.status = newStatus; return oldMsg });
+    let messagesToBeUpdatedReciever =  reciever.messages.map(oldMsg => { if (oldMsg.id === newMsg.id) oldMsg.status = newStatus; return oldMsg });
+    // Objekte aktualisieren
+    sender.messages = messagesToBeUpdatedSender;
+    reciever.messages = messagesToBeUpdatedReciever;
+      // Daten in DB aktualsisieren
+    await UserModel.updateOne({userName: sender.userName}, sender);
+    await UserModel.updateOne({userName: reciever.userName}, reciever);
+ 
+
+
+  res.status(200).send(messagesToBeUpdatedReciever);
+
+})
+
+
+
 app.put('/api/newMessage', async  (req, res) => {
   console.log("put - /api/newMessage");
   console.log(req.body);

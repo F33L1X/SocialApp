@@ -15,6 +15,7 @@ import Login from './components/inner components/Login';
 import { AppContextProvider } from './components/providers/AppContext';
 import FriendRequests from './components/FriendRequests';
 import Chat from './components/Chat';
+import EditProfil from './components/EditProfil';
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
               <Route path="profil/:userName" element={<Profil />} />
               <Route path="/freundschaftsanfragen" element={<FriendRequests />} />
               <Route path="/chat" element={<Chat />} />
+              <Route path="/editProfil" element={<EditProfil />} />
             </Routes>
           </Grid>          
           <Grid item xs={12} sm={3} md={3} lg={3}   >

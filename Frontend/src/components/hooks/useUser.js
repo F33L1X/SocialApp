@@ -51,6 +51,20 @@ const useUser=()=> {
       let response = await axios (config);
       return response.data;
     }
+
+    const backend_updateMessageStatus = async (myData) => {
+      var config = {
+        method: 'put',
+        url: '/api/updateMessageStatus',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        data: myData    
+      };
+      let response = await axios (config);
+      return response.data;
+    }
+
     const backend_sendNewMessage = async (newMessage) => {
       var config = {
         method: 'put',
@@ -89,6 +103,8 @@ const useUser=()=> {
       let response = await axios (config);
       return response.data;
     }
+
+
     const backend_acceptFriendRequest= async (friendRequest) =>{
       var config = {
         method: 'put',
@@ -166,7 +182,8 @@ const useUser=()=> {
             date: today,
             text: messageText,
             from: currentUser.userName,
-            to: chatPartnerName
+            to: chatPartnerName,
+            status: 0
          } 
          return await backend_sendNewMessage(newMessage);
       }
@@ -176,9 +193,12 @@ const useUser=()=> {
        return await backend_loadChatVerlauf(currentUser);
       }
 
+      const updateMessageStatus = (messages, newStatus) => {
+          return backend_updateMessageStatus ([messages, newStatus])
+      }
 
       return [addUser, loginUser, logoutUser, currentUser, addFriendRequest, 
-              acceptFriendRequest,rejectFriendRequest, sendNewMessage, loadChatVerlauf]
+              acceptFriendRequest,rejectFriendRequest, sendNewMessage, loadChatVerlauf, updateMessageStatus]
 }
 
 export default useUser;
