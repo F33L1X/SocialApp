@@ -14,9 +14,9 @@ import Profil from './components/Profil'
 import Login from './components/inner components/Login';
 import { AppContextProvider } from './components/providers/AppContext';
 import FriendRequests from './components/FriendRequests';
-import Chat from './components/Chat';
+import WebsocketChat from './components/WebsocketChat';
 import EditProfil from './components/EditProfil';
-
+import WebsocketChatroom from "./components/WebsocketChatroom";
 
 function App() {
 
@@ -28,6 +28,7 @@ function App() {
     
     <AppContextProvider>   
       <BrowserRouter>
+      
         <Grid container rowSpacing={2} columnSpacing={2} irection="row" justifyContent="center" alignItems="center"   >
             <Grid item xs={12}   >
               <Header> </Header>
@@ -40,7 +41,8 @@ function App() {
               <Route path ="/login" element={<Login />} />
               <Route path="profil/:userName" element={<Profil />} />
               <Route path="/freundschaftsanfragen" element={<FriendRequests />} />
-              <Route path="/chat" element={<Chat />} />
+              <Route path="/chat" element={<WebsocketChat />} />
+              <Route path="/chatroom/:roomId" element={<WebsocketChatroom />}/>
               <Route path="/editProfil" element={<EditProfil />} />
             </Routes>
           </Grid>          
@@ -51,6 +53,7 @@ function App() {
             <Footer></Footer>
           </Grid>        
         </Grid>
+        
       </BrowserRouter>
     </AppContextProvider>
   

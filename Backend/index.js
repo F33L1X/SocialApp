@@ -1,8 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 
+require('dotenv').config()
+const uri = process.env.MONGO_URI;
+
+
+const server = require("http").createServer();
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "*",
+  },
+});
+
 const app = express();
 const port = 8000;
+const PORT_CHATSERVER = 8002;
+const NEW_CHAT_MESSAGE_EVENT = "newChatMessage";
 
 app.use(express.json());
 
@@ -30,11 +43,104 @@ const postSchema = new mongoose.Schema({
 });
 const PostModel = mongoose.model("posts", postSchema)
 
+
+const conversationSchema = new mongoose.Schema({
+  roomID: String,
+  name: String,
+  messages: Array 
+});
+const ChatModel = mongoose.model("chats", conversationSchema)
+
+
+// Verbindung mit der MongoDB herstellen
 app.use(async function (req, res, next) {
-  await mongoose.connect('mongodb://localhost:27017/socialAppDB');
+  await mongoose.connect(uri);
+  //await mongoose.connect('mongodb://localhost:27017/socialAppDB');
   next();
 });
 
+
+// Chat Server /////////////////////////////////////////////
+
+io.on("connection",  (socket) => {
+  
+  // Join a conversation
+  const { roomId } = socket.handshake.query;
+  socket.join(roomId, async () => {
+    // User Objekte aus DB abfragen
+    const chatRoom = await ChatModel.findOne({ roomID: roomId});
+    console.log(chatRoom);
+    if (chatRoom !== null){
+      // Chatroom existiert bereits -> Daten laden
+      //////////////////////////////////////////////////////////
+      // Wie gebe ich den Chatverlauf zurück ans Frontend?
+
+    }
+    else{
+       // Erste Msg zwischen den beiden Usern -> Chatroom in DB anlegen
+      chatRoom = {
+        roomID: roomId,
+        messages: []
+      }
+      const result = await UserModel.create(chatRoom);
+    }
+  });
+
+  // Listen for new messages
+  socket.on(NEW_CHAT_MESSAGE_EVENT, async (data) => {
+    io.in(roomId).emit(NEW_CHAT_MESSAGE_EVENT, data);
+    
+ 
+    let newMsg = data[0];
+    console.log("newMsg");
+    console.log(newMsg);
+
+
+    // User Objekte aus DB abfragen
+    const chatRoom = await ChatModel.findOne({ roomID: roomId});
+    if (chatRoom!== null){
+        // Chatroom existiert bereits -> Daten aktualisieren
+        chatRoom.messages = [...chatRoom.messages, newMsg]
+        await ChatModel.updateOne({roomID: roomId}, chatRoom);
+    }else{
+        // Erste Msg zwischen den beiden Usern -> Chatroom in DB anlegen
+        // Dürfte eigentlich nie aufgrufen werden!!!
+        console.log("FEHLER!!!!!");
+        let chatRoom = {
+          roomID: roomId,
+          messages: [newMsg]
+        }
+      const result = await ChatModel.create(chatRoom);
+      console.log(result);
+    }
+
+
+  });
+
+  // Leave the room if the user closes the socket
+  socket.on("disconnect", () => {
+    socket.leave(roomId);
+  });
+});
+
+server.listen(PORT_CHATSERVER, () => {
+  console.log(`Listening on port ${PORT_CHATSERVER}`);
+});
+
+app.post ('/api/previousMessages', async (req, res) => {
+  console.log("post - /api/previousMessages")
+  
+  const chatRoom = await ChatModel.findOne({ roomID: req.body.roomId});
+  //console.log(chatRoom);
+  if (chatRoom !== null){
+    console.log(chatRoom.messages);
+    res.send(chatRoom.messages);
+  }else{
+    res.send([]);
+  }
+})
+
+// User und Post Handling /////////////////////////////////
 app.get('/', async (req, res) => {
   res.send('Hello World123!');
 });
@@ -155,7 +261,8 @@ app.post("/api/friendRequest", async (req, res) => {
 
   // Recieving User
   recievingUser.friendRequestsRecieved = [...recievingUser.friendRequestsRecieved, 
-                                          {Anfragender: friendRequest.sendingUser, date:friendRequest.date,
+                                          {Anfragender: friendRequest.sendingUser, AnfragenderID:sendingUser.id, 
+                                          date:friendRequest.date,
                                           message:friendRequest.message, id: friendRequest.id }]
   console.log(recievingUser);
   const updatedRecievingUser = await UserModel.updateOne({userName: recievingUser.userName}, recievingUser);
@@ -163,7 +270,8 @@ app.post("/api/friendRequest", async (req, res) => {
 
   // Sending User
   sendingUser.friendRequestsSent = [...sendingUser.friendRequestsSent, 
-                                    {AngefragtBei: friendRequest.recievingUser, date:friendRequest.date, 
+                                    {AngefragtBei: friendRequest.recievingUser, AngefragtBeiID:recievingUser.id, 
+                                    date:friendRequest.date, 
                                     message:friendRequest.message , id: friendRequest.id}]
   
   await UserModel.updateOne({userName: sendingUser.userName}, sendingUser);
@@ -210,11 +318,14 @@ app.put("/api/acceptFriendRequest", async  (req, res) => {
   const recievingUser = await UserModel.findOne({ userName: currentUser.userName});
 
   // neue Freundschaft anlegen
-  let newFriendshipRecievingUser = {id: friendRequestID , userName: newFriend, StartOfFriendship:today}
-  let newFriendshipSendingUser = {id: friendRequestID , userName: currentUser.userName, StartOfFriendship:today}
+  let newFriendshipRecievingUser = {id: friendRequestID , userName: newFriend, 
+                                    userID:newFriend.AnfragenderID, StartOfFriendship:today}
 
-  recievingUser.friends = [...  recievingUser.friends ,newFriendshipRecievingUser]
-  
+  let newFriendshipSendingUser = {id: friendRequestID , userName: currentUser.userName,
+                                    userID:currentUser.id, StartOfFriendship:today}
+
+  // User updaten mit neuem Freund
+  recievingUser.friends = [...  recievingUser.friends ,newFriendshipRecievingUser]  
   sendingUser.friends = [...sendingUser.friends, newFriendshipSendingUser]
 
   // Freundschaftsanfrage bei beiden löschen
@@ -327,3 +438,11 @@ app.delete("/api/post", async  (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })
+
+
+
+
+
+
+
+
